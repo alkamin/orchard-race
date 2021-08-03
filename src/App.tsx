@@ -2,7 +2,7 @@ import "@fontsource/chewy";
 import "@fontsource/comfortaa";
 import React from "react";
 import Game from "./Game";
-import "./app.css";
+import "./App.css";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./theme";
 
