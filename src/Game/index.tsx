@@ -1,19 +1,30 @@
-import React from "react";
+import { useState } from "react";
 import backgroundImage from "../images/bkg-apples.png";
-import { Phase } from "../types";
+import { Backend, BackendProps } from "../types";
 import Start from "./Start";
 import { Flex } from "@chakra-ui/react";
+import Board from "./Board";
+import ZustandBackend from "./backends/ZustandBackend";
+import JotaiBackend from "./backends/JotaiBackend";
+import ValtioBackend from "./backends/ValtioBackend";
 
-const getScreen = (phase: Phase) => {
-  switch (phase) {
-    case Phase.Start: {
-      return <Start />;
-    }
+type GetBackendProps = BackendProps & {
+  backend: Backend;
+};
+
+const GetBackend = ({ backend, children }: GetBackendProps) => {
+  switch (backend) {
+    case Backend.Zustand:
+      return <ZustandBackend>{(api) => children(api)}</ZustandBackend>;
+    case Backend.Jotai:
+      return <JotaiBackend>{(api) => children(api)}</JotaiBackend>;
+    case Backend.Valtio:
+      return <ValtioBackend>{(api) => children(api)}</ValtioBackend>;
   }
 };
 
 const Game = () => {
-  const phase: Phase = Phase.Start;
+  const [backend, setBackend] = useState<Backend | null>(null);
 
   return (
     <Flex
@@ -25,11 +36,19 @@ const Game = () => {
         position: "absolute",
         inset: 0,
         backgroundImage: `url(${backgroundImage})`,
-        filter: "opacity(50%)",
+        filter: "opacity(66%)",
       }}
     >
       <Flex flex="1" position="relative" alignSelf="stretch">
-        {getScreen(phase)}
+        {backend === null ? (
+          <Start onBackendSelect={setBackend} />
+        ) : (
+          <GetBackend backend={backend}>
+            {(api) => (
+              <Board {...api} onUnloadBackend={() => setBackend(null)} />
+            )}
+          </GetBackend>
+        )}
       </Flex>
     </Flex>
   );

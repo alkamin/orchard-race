@@ -1,14 +1,15 @@
-import { extendTheme } from "@chakra-ui/react";
+import { ComponentStyleConfig, extendTheme } from "@chakra-ui/react";
+import leavesBkg from "./images/geometric-leaves.png";
 
 function buttonStyle({ colorScheme = "indigo", theme }: Record<string, any>) {
   return {
     borderRadius: 999,
     color: "white",
     backgroundColor: "white",
-    border: "2px solid",
+    border: "3px solid",
     borderColor: `${colorScheme}.500`,
     fontFamily: "Chewy",
-    "-webkit-text-stroke-width": "1px",
+    "-webkit-text-stroke-width": "1.5px",
     "-webkit-text-stroke-color": `${theme.colors[colorScheme][500]}`,
     letterSpacing: "0.05em",
     _hover: {
@@ -28,9 +29,28 @@ function strokedVariant({
     color: "white !important",
     "-webkit-text-stroke-width": "0.02em",
     "-webkit-text-stroke-color": `${theme.colors[colorScheme][500]}`,
-    letterSpacing: "0.05em",
   };
 }
+
+const cardTheme: ComponentStyleConfig = {
+  baseStyle: {
+    display: "inline-flex",
+    borderRadius: "xl",
+    py: 6,
+    px: 8,
+  },
+  variants: {
+    game: ({ colorScheme }) => ({
+      backgroundImage: `url(${leavesBkg})`,
+      boxShadow: "lg",
+      border: colorScheme ? "6px solid" : "1px solid",
+      borderColor: colorScheme ? `${colorScheme}.600` : "gray.700",
+      height: "21em",
+      width: "16.25em",
+      fontSize: 16,
+    }),
+  },
+};
 
 const theme = extendTheme({
   fonts: {
@@ -221,11 +241,16 @@ const theme = extendTheme({
     },
   },
   components: {
+    Card: cardTheme,
     Button: {
       variants: {
         stroked: buttonStyle,
       },
       sizes: {
+        lg: {
+          fontSize: 36,
+          padding: "0.8em 0.5em",
+        },
         xl: {
           padding: "0.25em 0.5em",
           fontSize: 48,
@@ -233,12 +258,15 @@ const theme = extendTheme({
       },
     },
     Heading: {
+      baseStyle: {
+        "letter-spacing": "0.01em",
+      },
       variants: {
         stroked: strokedVariant,
       },
       sizes: {
         "4xl": {
-          fontSize: 162,
+          fontSize: 172,
         },
       },
     },
