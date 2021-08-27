@@ -7,14 +7,26 @@ import { BackendProps, GameAPI, CardType } from "../../types";
 const useStore = create<GameAPI>((set, get) => ({
   deck: [],
   drawn: [],
-  bribed: [],
-  initializeDeck: () => {
-    console.log("(Zustand) Initialize backend");
-    set({ deck: createDeck(), drawn: [], bribed: [] });
+  discarded: [],
+  startGame: () => {
+    console.log("(Zustand) Start game");
+
+    /**
+     * Start a new game by creating a fresh deck of cards and clearing
+     * the discarded and drawn card arrays
+     */
+
+    set({ deck: createDeck(), drawn: [], discarded: [] });
   },
-  shutdown: () => {
-    console.log("(Zustand) Shutdown backend");
-    set({ deck: [], drawn: [], bribed: [] });
+  endGame: () => {
+    console.log("(Zustand) end game");
+
+    /**
+     * When the game is over, ensure the state is cleared and any synced
+     * data reflects that
+     */
+
+    set({ deck: [], drawn: [], discarded: [] });
   },
   drawCard: () => {
     const [card, ...remaining] = get().deck;
@@ -26,7 +38,7 @@ const useStore = create<GameAPI>((set, get) => ({
        * If there are no more cards left after drawing a card then shuffle
        * the discarded cards and make them the draw pile
        */
-      set({ deck: shuffle(get().bribed), bribed: [] });
+      set({ deck: shuffle(get().discarded), discarded: [] });
     } else {
       set({ deck: remaining });
     }
@@ -34,6 +46,10 @@ const useStore = create<GameAPI>((set, get) => ({
   },
   bribe: (cardType: CardType) => {
     console.log("(Zustand) Bribing with cardtype", cardType);
+
+    /**
+     * Attempt to remove two cards of the specified fruit type and one crow card
+     */
 
     const [drawn1, card1] = findAndRemove(
       get().drawn,
@@ -47,7 +63,7 @@ const useStore = create<GameAPI>((set, get) => ({
     if (card1 && card2 && crowCard) {
       set({
         drawn: drawnF,
-        bribed: [card1, card2, crowCard, ...get().bribed],
+        discarded: [card1, card2, crowCard, ...get().discarded],
       });
     }
   },

@@ -7,28 +7,38 @@ import { BackendProps, Card, CardType, GameAPI } from "../../types";
 
 const deckAtom = atom<Card[]>([]);
 const drawnAtom = atom<Card[]>([]);
-const bribedAtom = atom<Card[]>([]);
+const discardedAtom = atom<Card[]>([]);
 
 const JotaiBackend = ({ children }: BackendProps) => {
   const [deck, setDeck] = useAtom(deckAtom);
   const [drawn, setDrawn] = useAtom(drawnAtom);
-  const [bribed, setBribed] = useAtom(bribedAtom);
+  const [discarded, setDiscarded] = useAtom(discardedAtom);
 
-  const initializeDeck = useCallback(() => {
+  const startGame = useCallback(() => {
     console.log("(Jotai) Initialize backend");
 
-    setDeck(createDeck());
-    setBribed([]);
-    setDrawn([]);
-  }, [setBribed, setDeck, setDrawn]);
+    /**
+     * Start a new game by creating a fresh deck of cards and clearing
+     * the discarded and drawn card arrays
+     */
 
-  const shutdown = useCallback(() => {
-    console.log("(Jotai) Shutdown backend");
+    setDeck(createDeck());
+    setDiscarded([]);
+    setDrawn([]);
+  }, [setDiscarded, setDeck, setDrawn]);
+
+  const endGame = useCallback(() => {
+    console.log("(Jotai) endGame backend");
+
+    /**
+     * When the game is over, ensure the state is cleared and any synced
+     * data reflects that
+     */
 
     setDeck([]);
-    setBribed([]);
+    setDiscarded([]);
     setDrawn([]);
-  }, [setBribed, setDeck, setDrawn]);
+  }, [setDiscarded, setDeck, setDrawn]);
 
   const drawCard = useCallback(() => {
     const [card, ...remaining] = deck;
@@ -40,17 +50,21 @@ const JotaiBackend = ({ children }: BackendProps) => {
        * If there are no more cards left after drawing a card then shuffle
        * the discarded cards and make them the draw pile
        */
-      setDeck(shuffle(bribed));
-      setBribed([]);
+      setDeck(shuffle(discarded));
+      setDiscarded([]);
     } else {
       setDeck(remaining);
     }
     setDrawn((prev) => [card, ...prev]);
-  }, [bribed, deck, setBribed, setDeck, setDrawn]);
+  }, [discarded, deck, setDiscarded, setDeck, setDrawn]);
 
   const bribe = useCallback(
     (cardType: CardType) => {
       console.log("(Jotai) Bribing with cardtype", cardType);
+
+      /**
+       * Attempt to remove two cards of the specified fruit type and one crow card
+       */
 
       const [drawn1, card1] = findAndRemove(drawn, (c) => c.type === cardType);
       const [drawn2, card2] = findAndRemove(drawn1, (c) => c.type === cardType);
@@ -61,23 +75,23 @@ const JotaiBackend = ({ children }: BackendProps) => {
 
       if (card1 && card2 && crowCard) {
         setDrawn(drawnF);
-        setBribed((prev) => [card1, card2, crowCard, ...prev]);
+        setDiscarded((prev) => [card1, card2, crowCard, ...prev]);
       }
     },
-    [drawn, setBribed, setDrawn]
+    [drawn, setDiscarded, setDrawn]
   );
 
   const propsAdapter: GameAPI = useMemo(
     () => ({
       deck,
       drawn,
-      bribed,
-      initializeDeck,
-      shutdown,
+      discarded,
+      startGame,
+      endGame,
       drawCard,
       bribe,
     }),
-    [bribe, bribed, deck, drawCard, drawn, initializeDeck, shutdown]
+    [bribe, discarded, deck, drawCard, drawn, startGame, endGame]
   );
 
   return <>{children(propsAdapter)}</>;

@@ -5,30 +5,31 @@ import findAndRemove from "../../lib/findAndRemove";
 import shuffle from "../../lib/shuffle";
 import { BackendProps, CardType, GameAPI, GameState } from "../../types";
 
-const state = proxy<GameState>({
+const initialState: GameState = {
   deck: [],
   drawn: [],
-  bribed: [],
-});
+  discarded: [],
+};
+
+const state = proxy(initialState);
 
 const ValtioBackend = ({ children }: BackendProps) => {
   const snapshot = useSnapshot(state);
 
-  const initializeDeck = useCallback(() => {
+  const startGame = useCallback(() => {
     console.log("(Valtio) Initialize deck called");
 
     /**
      * Start a new game by creating a fresh deck of cards and clearing
-     * the bribed and drawn card arrays
+     * the discarded and drawn card arrays
      */
-
     state.deck = createDeck();
-    state.bribed = [];
+    state.discarded = [];
     state.drawn = [];
   }, []);
 
-  const shutdown = useCallback(() => {
-    console.log("(Valtio) Shutdown backend");
+  const endGame = useCallback(() => {
+    console.log("(Valtio) endGame backend");
 
     /**
      * When the game is over, ensure the state is cleared and any synced
@@ -36,7 +37,7 @@ const ValtioBackend = ({ children }: BackendProps) => {
      */
 
     state.deck = [];
-    state.bribed = [];
+    state.discarded = [];
     state.drawn = [];
   }, []);
 
@@ -50,8 +51,8 @@ const ValtioBackend = ({ children }: BackendProps) => {
        * If there are no more cards left after drawing a card then shuffle
        * the discarded cards and make them the draw pile
        */
-      state.deck = shuffle(state.bribed);
-      state.bribed = [];
+      state.deck = shuffle(state.discarded);
+      state.discarded = [];
     } else {
       state.deck = remaining;
     }
@@ -60,6 +61,10 @@ const ValtioBackend = ({ children }: BackendProps) => {
 
   const bribe = useCallback((cardType: CardType) => {
     console.log("(Valtio) Bribing with cardtype", cardType);
+
+    /**
+     * Attempt to remove two cards of the specified fruit type and one crow card
+     */
 
     const [drawn1, card1] = findAndRemove(
       state.drawn,
@@ -73,19 +78,19 @@ const ValtioBackend = ({ children }: BackendProps) => {
 
     if (card1 && card2 && crowCard) {
       state.drawn = drawnF;
-      state.bribed = [card1, card2, crowCard, ...state.bribed];
+      state.discarded = [card1, card2, crowCard, ...state.discarded];
     }
   }, []);
 
   const apiAdapter: GameAPI = useMemo(
     () => ({
       ...snapshot,
-      initializeDeck,
-      shutdown,
+      startGame,
+      endGame,
       drawCard,
       bribe,
     }),
-    [bribe, drawCard, initializeDeck, shutdown, snapshot]
+    [bribe, drawCard, startGame, endGame, snapshot]
   );
   return <>{children(apiAdapter)}</>;
 };

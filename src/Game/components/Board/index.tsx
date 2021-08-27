@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import Apple from "../../../components/Apple";
 import GameCard from "../../../components/GameCard";
 import Orange from "../../../components/Orange";
@@ -33,16 +33,15 @@ const Board = ({
   drawCard,
   drawn,
   deck,
-  initializeDeck,
-  shutdown,
-  bribed,
+  startGame,
+  endGame,
+  discarded,
   bribe,
   onUnloadBackend,
 }: Props) => {
   useEffect(() => {
-    initializeDeck();
-    return () => shutdown();
-  }, [initializeDeck, shutdown]);
+    startGame();
+  }, [startGame]);
 
   const appleCount = useMemo(
     () => drawn.filter((c) => c.type === CardType.Apple).length,
@@ -70,6 +69,11 @@ const Board = ({
     () => appleCount >= 5 && orangeCount >= 5 && pearCount >= 5,
     [appleCount, orangeCount, pearCount]
   );
+
+  const onClickExit = useCallback(() => {
+    endGame();
+    onUnloadBackend();
+  }, [onUnloadBackend, endGame]);
 
   return (
     <>
@@ -243,7 +247,7 @@ const Board = ({
               alignItems="center"
               justifyContent="flex-start"
             >
-              <Repeat n={bribed.length}>
+              <Repeat n={discarded.length}>
                 <GameCard fontSize={CARD_SIZE} />
               </Repeat>
             </Stack>
@@ -275,7 +279,7 @@ const Board = ({
         variant="stroked"
         colorScheme="indigo"
         color="lime.100"
-        onClick={onUnloadBackend}
+        onClick={onClickExit}
         position="absolute"
         zIndex="50"
         m={4}
@@ -286,8 +290,8 @@ const Board = ({
       >
         Exit
       </Button>
-      {showGameOver && <GameOver onUnloadBackend={onUnloadBackend} />}
-      {showVictory && <Victory onUnloadBackend={onUnloadBackend} />}
+      {showGameOver && <GameOver onUnloadBackend={onClickExit} />}
+      {showVictory && <Victory onUnloadBackend={onClickExit} />}
     </>
   );
 };

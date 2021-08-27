@@ -26,16 +26,16 @@ export type Card = {
 };
 
 export type GameState = {
-  bribed: Card[];
+  discarded: Card[];
   deck: Card[];
   drawn: Card[];
 };
 
 export type GameAPI = GameState & {
-  initializeDeck: () => void;
+  startGame: () => void;
   drawCard: () => void;
   bribe: (cardType: CardType) => void;
-  shutdown: () => void;
+  endGame: () => void;
 };
 
 export type BackendProps = {
