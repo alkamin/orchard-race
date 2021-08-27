@@ -1,30 +1,16 @@
-import { useState } from "react";
 import backgroundImage from "../images/bkg-apples.png";
-import { Backend, BackendProps } from "../types";
-import Start from "./Start";
+import { Backend } from "../types";
+import Start from "./components/Start";
 import { Flex } from "@chakra-ui/react";
-import Board from "./Board";
-import ZustandBackend from "./backends/ZustandBackend";
-import JotaiBackend from "./backends/JotaiBackend";
-import ValtioBackend from "./backends/ValtioBackend";
+import Board from "./components/Board";
+import { useAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import GetBackend from "./components/GetBackend";
 
-type GetBackendProps = BackendProps & {
-  backend: Backend;
-};
-
-const GetBackend = ({ backend, children }: GetBackendProps) => {
-  switch (backend) {
-    case Backend.Zustand:
-      return <ZustandBackend>{(api) => children(api)}</ZustandBackend>;
-    case Backend.Jotai:
-      return <JotaiBackend>{(api) => children(api)}</JotaiBackend>;
-    case Backend.Valtio:
-      return <ValtioBackend>{(api) => children(api)}</ValtioBackend>;
-  }
-};
+const backendAtom = atomWithStorage<Backend | null>("backend", null);
 
 const Game = () => {
-  const [backend, setBackend] = useState<Backend | null>(null);
+  const [backend, setBackend] = useAtom(backendAtom);
 
   return (
     <Flex

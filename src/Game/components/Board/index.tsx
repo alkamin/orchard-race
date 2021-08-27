@@ -10,14 +10,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useMemo } from "react";
-import Apple from "../../components/Apple";
-import GameCard from "../../components/GameCard";
-import Orange from "../../components/Orange";
-import Pear from "../../components/Pear";
-import Repeat from "../../components/Repeat";
-import crowImage from "../../images/crow-hi.png";
-import tableImage from "../../images/retina_wood.png";
-import { CardType, GameAPI } from "../../types";
+import Apple from "../../../components/Apple";
+import GameCard from "../../../components/GameCard";
+import Orange from "../../../components/Orange";
+import Pear from "../../../components/Pear";
+import Repeat from "../../../components/Repeat";
+import crowImage from "../../../images/crow-hi.png";
+import tableImage from "../../../images/retina_wood.png";
+import { CardType, GameAPI } from "../../../types";
 import GameOver from "./components/GameOver";
 import Victory from "./components/Victory";
 

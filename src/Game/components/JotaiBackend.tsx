@@ -2,7 +2,7 @@ import { atom, useAtom } from "jotai";
 import { useCallback, useMemo } from "react";
 import createDeck from "../../lib/createDeck";
 import findAndRemove from "../../lib/findAndRemove";
-import shuffleArray from "../../lib/shuffleArray";
+import shuffle from "../../lib/shuffle";
 import { BackendProps, Card, CardType, GameAPI } from "../../types";
 
 const deckAtom = atom<Card[]>([]);
@@ -40,7 +40,7 @@ const JotaiBackend = ({ children }: BackendProps) => {
        * If there are no more cards left after drawing a card then shuffle
        * the discarded cards and make them the draw pile
        */
-      setDeck(shuffleArray(bribed));
+      setDeck(shuffle(bribed));
       setBribed([]);
     } else {
       setDeck(remaining);

@@ -1,8 +1,8 @@
 import { Button, Heading, VStack, Image, useInterval } from "@chakra-ui/react";
 import { motion, useAnimation } from "framer-motion";
 import React, { useEffect } from "react";
-import crowImage from "../images/crow-hi.png";
-import { Backend } from "../types";
+import crowImage from "../../images/crow-hi.png";
+import { Backend } from "../../types";
 
 type Props = {
   onBackendSelect: (backend: Backend) => void;

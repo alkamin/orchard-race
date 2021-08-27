@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { proxy, useSnapshot } from "valtio";
 import createDeck from "../../lib/createDeck";
 import findAndRemove from "../../lib/findAndRemove";
-import shuffleArray from "../../lib/shuffleArray";
+import shuffle from "../../lib/shuffle";
 import { BackendProps, CardType, GameAPI, GameState } from "../../types";
 
 const state = proxy<GameState>({
@@ -50,7 +50,7 @@ const ValtioBackend = ({ children }: BackendProps) => {
        * If there are no more cards left after drawing a card then shuffle
        * the discarded cards and make them the draw pile
        */
-      state.deck = shuffleArray(state.bribed);
+      state.deck = shuffle(state.bribed);
       state.bribed = [];
     } else {
       state.deck = remaining;

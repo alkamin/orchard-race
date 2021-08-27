@@ -1,7 +1,7 @@
 import create from "zustand";
 import createDeck from "../../lib/createDeck";
 import findAndRemove from "../../lib/findAndRemove";
-import shuffleArray from "../../lib/shuffleArray";
+import shuffle from "../../lib/shuffle";
 import { BackendProps, GameAPI, CardType } from "../../types";
 
 const useStore = create<GameAPI>((set, get) => ({
@@ -26,7 +26,7 @@ const useStore = create<GameAPI>((set, get) => ({
        * If there are no more cards left after drawing a card then shuffle
        * the discarded cards and make them the draw pile
        */
-      set({ deck: shuffleArray(get().bribed), bribed: [] });
+      set({ deck: shuffle(get().bribed), bribed: [] });
     } else {
       set({ deck: remaining });
     }

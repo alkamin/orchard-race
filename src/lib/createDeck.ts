@@ -1,12 +1,12 @@
 import { CardType } from "../types";
-import shuffleArray from "./shuffleArray";
+import shuffle from "./shuffle";
 
 const FRUIT_COUNT = 8;
 const CROW_COUNT = 9;
 
 const createDeck = () => {
   let cursor = 0;
-  return shuffleArray([
+  return shuffle([
     ...[...Array(FRUIT_COUNT)].map(() => ({
       id: cursor++,
       type: CardType.Apple,
